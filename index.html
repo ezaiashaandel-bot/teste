@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste do GitHub</title>
+
+<style>
+body{
+    margin:0;
+    background:#222;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+}
+
+canvas{
+    background:#4caf50;
+    border:4px solid white;
+}
+</style>
+
+</head>
+<body>
+
+<canvas id="game" width="800" height="500"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const player = {
+    x:100,
+    y:100,
+    size:30,
+    speed:4
+};
+
+const food = {
+    x:300,
+    y:200,
+    size:20
+};
+
+let score = 0;
+
+const keys = {};
+
+document.addEventListener("keydown",(e)=>{
+    keys[e.key.toLowerCase()] = true;
+});
+
+document.addEventListener("keyup",(e)=>{
+    keys[e.key.toLowerCase()] = false;
+});
+
+function movePlayer(){
+
+    if(keys["w"]) player.y -= player.speed;
+    if(keys["s"]) player.y += player.speed;
+    if(keys["a"]) player.x -= player.speed;
+    if(keys["d"]) player.x += player.speed;
+
+    if(player.x < 0) player.x = 0;
+    if(player.y < 0) player.y = 0;
+
+    if(player.x > canvas.width-player.size)
+        player.x = canvas.width-player.size;
+
+    if(player.y > canvas.height-player.size)
+        player.y = canvas.height-player.size;
+
+}
+
+function collision(){
+
+    if(
+        player.x < food.x + food.size &&
+        player.x + player.size > food.x &&
+        player.y < food.y + food.size &&
+        player.y + player.size > food.y
+    ){
+
+        score++;
+
+        food.x = Math.random()*(canvas.width-30);
+        food.y = Math.random()*(canvas.height-30);
+
+    }
+
+}
+
+function draw(){
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // jogador
+    ctx.fillStyle="blue";
+    ctx.fillRect(player.x,player.y,player.size,player.size);
+
+    // comida
+    ctx.fillStyle="red";
+    ctx.fillRect(food.x,food.y,food.size,food.size);
+
+    // texto
+    ctx.fillStyle="white";
+    ctx.font="24px Arial";
+    ctx.fillText("Pontuação: "+score,20,35);
+
+}
+
+function game(){
+
+    movePlayer();
+
+    collision();
+
+    draw();
+
+    requestAnimationFrame(game);
+
+}
+
+game();
+
+</script>
+
+</body>
+</html>
